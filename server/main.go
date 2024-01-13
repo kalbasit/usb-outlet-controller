@@ -32,6 +32,7 @@ func main() {
 		log.Fatalf("The device %s is not accessible or does not exist", *devicePath)
 	}
 
+	log.Printf("opening the outlet device located at %q", *devicePath)
 	dev, err := openOutletDevice()
 	if err != nil {
 		log.Fatalf("error opening the outlet device: %s", err)
@@ -45,13 +46,16 @@ func main() {
 	}()
 
 	http.HandleFunc("/close", func(w http.ResponseWriter, r *http.Request) {
+		log.Print("Closing the circuit breaker")
 		dev.Write([]byte("close\n"))
 	})
 
 	http.HandleFunc("/open", func(w http.ResponseWriter, r *http.Request) {
+		log.Print("Opening the circuit breaker")
 		dev.Write([]byte("open\n"))
 	})
 
+	log.Printf("starting HTTP server on :%d", *port)
 	if err = http.ListenAndServe(fmt.Sprintf(":%d", *port), nil); err != nil {
 		log.Fatalf("error starting the HTTP server: %s", err)
 	}
