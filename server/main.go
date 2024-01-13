@@ -43,6 +43,7 @@ func main() {
 	go func() {
 		<-signalC
 		dev.Close()
+		os.Exit(0)
 	}()
 
 	http.HandleFunc("/close", func(w http.ResponseWriter, r *http.Request) {
