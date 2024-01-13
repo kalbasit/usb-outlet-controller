@@ -48,12 +48,32 @@ func main() {
 
 	http.HandleFunc("/close", func(w http.ResponseWriter, r *http.Request) {
 		log.Print("Closing the circuit breaker")
-		dev.Write([]byte("close\n"))
+
+		if _, err := dev.Write([]byte("close\n")); err != nil {
+			errStr := fmt.Sprintf("error writing to the device: %s", err)
+			log.Print(errStr)
+
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(errStr))
+			return
+		}
+
+		w.Write([]byte("Ok!"))
 	})
 
 	http.HandleFunc("/open", func(w http.ResponseWriter, r *http.Request) {
 		log.Print("Opening the circuit breaker")
-		dev.Write([]byte("open\n"))
+
+		if _, err := dev.Write([]byte("open\n")); err != nil {
+			errStr := fmt.Sprintf("error writing to the device: %s", err)
+			log.Print(errStr)
+
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(errStr))
+			return
+		}
+
+		w.Write([]byte("Ok!"))
 	})
 
 	log.Printf("starting HTTP server on :%d", *port)
