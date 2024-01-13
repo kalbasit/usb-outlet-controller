@@ -52,7 +52,9 @@ func main() {
 		dev.Write([]byte("open\n"))
 	})
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+	if err = http.ListenAndServe(fmt.Sprintf(":%d", *port), nil); err != nil {
+		log.Fatalf("error starting the HTTP server: %s", err)
+	}
 }
 
 func openOutletDevice() (serial.Port, error) {
